@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@zeit/next-css": "^1.0.1",
+    "axios": "^0.21.1",
     "next": "^10.0.3",
     "normalize.css": "^8.0.1",
     "react": "^17.0.1",
