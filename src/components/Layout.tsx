@@ -1,3 +1,5 @@
+import styled from 'styled-components'
+
 import Header from 'components/Header'
 import Footer from 'components/Footer'
 
@@ -7,24 +9,17 @@ type Props = {
   title?: string
 }
 
-const Layout: React.FC<Props> = ({
-  children,
-  title = 'This is the default title',
-}) => (
+const Layout: React.FC<Props> = ({ children, title = 'Untitled' }) => (
   <div>
     <GlobalStyle />
-    <Header
-      title={title}
-      navigationItems={[
-        {
-          title: 'about',
-          link: '/about',
-        },
-      ]}
-    />
-    {children}
+    <Header title={title} navigationItems={[]} />
+    <ChildrenContainer>{children}</ChildrenContainer>
     <Footer />
   </div>
 )
 
 export default Layout
+
+const ChildrenContainer = styled.div`
+  overflow-x: hidden;
+`

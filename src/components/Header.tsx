@@ -1,6 +1,7 @@
 import React from 'react'
-import Link from 'next/link'
 import Head from 'next/head'
+import Link from 'next/link'
+import styled from 'styled-components'
 
 import { NavigationItem } from 'types'
 
@@ -16,7 +17,8 @@ const Header: React.FC<Props> = ({ title = 'Title', navigationItems = [] }) => (
       <meta charSet="utf-8" />
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
     </Head>
-    <header>
+    <HeaderContent>
+      <BlogTitle href="/">gates1de のブログ (仮)</BlogTitle>
       <nav>
         {navigationItems.map((item) => (
           <Link key={item.title} href={item.link}>
@@ -24,8 +26,21 @@ const Header: React.FC<Props> = ({ title = 'Title', navigationItems = [] }) => (
           </Link>
         ))}
       </nav>
-    </header>
+    </HeaderContent>
   </React.Fragment>
 )
 
 export default Header
+
+const HeaderContent = styled.header`
+  padding: 2rem;
+`
+
+const BlogTitle = styled.a`
+  font-size: 2.4rem;
+  color: #37352f;
+
+  :visited {
+    color: #37352f;
+  }
+`

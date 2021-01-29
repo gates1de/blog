@@ -15,3 +15,8 @@ export type LoadPageChunkRequestParams = {
   verticalColumns: boolean
   chunkNumber: number
 }
+
+export type NavigationItem = {
+  title: string
+  link: string
+}

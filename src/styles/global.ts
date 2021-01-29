@@ -7,6 +7,10 @@ const GlobalStyle = createGlobalStyle`
     -webkit-font-smoothing: auto;
     background-color: white;
     font-size:62.5%;
+  }
+
+  body {
+    color: #37352f;
     font-family: -apple-system,
       BlinkMacSystemFont,
       "Segoe UI",
@@ -16,14 +20,28 @@ const GlobalStyle = createGlobalStyle`
       sans-serif,
       "Segoe UI Emoji",
       "Segoe UI Symbol";
+    font-weight: 400;
+    font-size: 1.6rem;
+    line-height: 2.4rem;
+    white-space: pre-wrap;
+  }
+
+  div {
+    box-sizing: border-box;
   }
 
   a {
+    color: #1a73e8;
+    cursor: pointer;
     text-decoration: none;
-    transition: 0.1s ease-in;
+    transition: 0.2s ease-in;
 
     :hover {
-      opacity: 0.7;
+      opacity: 0.5;
+    }
+
+    :visited {
+      color: #1a73e8;
     }
   }
 `

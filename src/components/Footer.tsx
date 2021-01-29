@@ -3,9 +3,8 @@ import styled from 'styled-components'
 
 const Footer: React.FC = () => (
   <React.Fragment>
-    <hr />
     <StyledFooter>
-      <span>I'm here to stay (Footer)</span>
+      <p className="copyright">© {new Date().getFullYear()} gates1de.</p>
     </StyledFooter>
   </React.Fragment>
 )
@@ -13,9 +12,12 @@ const Footer: React.FC = () => (
 export default Footer
 
 const StyledFooter = styled.footer`
-  padding: 1rem;
+  display: flex;
+  min-height: 6rem;
+  padding: 3rem 2rem 1rem;
 
-  span {
-    font-size: 1.4rem;
+  p.copyright {
+    font-size: 1.2rem;
+    margin: auto auto 0 auto;
   }
 `

@@ -15,10 +15,7 @@ export default class NotionRepository {
     return this._instance
   }
 
-  loadPageChunk = async (
-    pageId: string,
-    limit = 50,
-  ): Promise<PageChunk[]> => {
+  loadPageChunk = async (pageId: string, limit = 50): Promise<PageChunk[]> => {
     if (!process.env.NOTION_TOKEN) {
       throw new Error('Not set process.env.NOTION_TOKEN')
     }
