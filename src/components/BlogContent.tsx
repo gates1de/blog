@@ -20,7 +20,7 @@ export const BlogContent = ({ pageId, pageChunks }: Props) => {
             switch (chunk.type) {
               case 'page':
                 if (pageId !== chunk.id) {
-                  return
+                  return null
                 }
                 return (
                   <TitleContainer key={chunk.id}>
@@ -58,6 +58,7 @@ export const BlogContent = ({ pageId, pageChunks }: Props) => {
                       ) {
                         return (
                           <Link
+                            key={chunk.id}
                             href={
                               content.link.url.startsWith('/') &&
                               content.link.hash
@@ -79,9 +80,9 @@ export const BlogContent = ({ pageId, pageChunks }: Props) => {
           {pageChunks
             .filter((c) => c.type === 'bulleted_list')
             .map((chunk, i) => (
-              <>
+              <div key={chunk.id}>
                 {i == 0 && <StyledDivider style={{ margin: '6rem 0 2rem' }} />}
-                <AnnotationContainer key={i} id={chunk.id.replace(/-/g, '')}>
+                <AnnotationContainer id={chunk.id.replace(/-/g, '')}>
                   <span>• </span>
                   {chunk.contents.map((content) => {
                     if (content.text) {
@@ -90,6 +91,7 @@ export const BlogContent = ({ pageId, pageChunks }: Props) => {
                     if (content.link && content.link.text && content.link.url) {
                       return (
                         <Link
+                          key={chunk.id}
                           href={
                             content.link.url.startsWith('/') &&
                             content.link.hash
@@ -103,7 +105,7 @@ export const BlogContent = ({ pageId, pageChunks }: Props) => {
                     }
                   })}
                 </AnnotationContainer>
-              </>
+              </div>
             ))}
         </>
       )}
