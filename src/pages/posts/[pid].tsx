@@ -48,7 +48,7 @@ export const getStaticProps = async ({ params }: StaticProps): Promise<
 export const getStaticPaths = async () => ({
   // FIXME: fetch pages
   paths: [{ params: { pid: '1caf5c36-6007-4644-add6-119830ebb6d9' } }],
-  fallback: true,
+  fallback: false,
 })
 
 export default Post

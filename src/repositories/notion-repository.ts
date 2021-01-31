@@ -5,7 +5,7 @@ import PageChunk from 'models/page-chunk'
 import { LoadPageChunkRequestParams, QueryCollectionRequestParams } from 'types'
 
 export default class NotionRepository {
-  private static _instance: NotionRepostiory
+  private static _instance: NotionRepository
 
   constructor() {}
 

@@ -21,7 +21,7 @@ const IndexPage: NextPage<Props> = ({ data }) => {
   )
 }
 
-export const getStaticProps = async (): Promise<
+export const getServerSideProps = async (): Promise<
   GetStaticPropsResult<Props>
 > => {
   try {
@@ -38,16 +38,10 @@ export const getStaticProps = async (): Promise<
           queryCollection.filter((c) => c.parentId === collectionId),
         ),
       },
-      revalidate: true,
     } as GetStaticPropsResult<Props>
   } catch (error) {
     throw error
   }
 }
-
-export const getStaticPaths = async () => ({
-  paths: [],
-  fallback: true,
-})
 
 export default IndexPage
