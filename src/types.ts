@@ -26,7 +26,7 @@ export type QueryCollectionRequestParams = {
     type: 'table'
     userTimeZone?: string
   }
-  query?: {[key: string]: any}
+  query?: { [key: string]: any }
 }
 
 export type NavigationItem = {
