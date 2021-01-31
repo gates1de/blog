@@ -48,10 +48,18 @@ export const getStaticProps = async ({ params }: StaticProps): Promise<
   }
 }
 
-export const getStaticPaths = async () => ({
-  // FIXME: fetch pages
-  paths: [{ params: { pid: '1caf5c36-6007-4644-add6-119830ebb6d9' } }],
-  fallback: false,
-})
+export const getStaticPaths = async () => {
+  const collectionId = 'cb7f4670-623c-410e-b59e-da29fd96c691'
+  const collectionViewId = '73f23905-79a0-4926-8780-0333d9a1993b'
+  const queryCollection = await NotionRepository.shared().queryCollection(
+    collectionId,
+    collectionViewId,
+  )
+  const paths = queryCollection.filter(c => c.parentId === collectionId).map(c => { return { params: { pid: c.id } }})
+  return {
+    paths: paths,
+    fallback: false,
+  }
+}
 
 export default Post
