@@ -3,6 +3,7 @@ import { GetStaticPropsResult, NextPage } from 'next'
 import { BlogContent } from 'components/BlogContent'
 import Layout from 'components/Layout'
 import { PageContent } from 'components/PageContent'
+import Collection from 'models/collection'
 import PageChunk from 'models/page-chunk'
 import NotionRepository from 'repositories/notion-repository'
 
@@ -49,13 +50,28 @@ export const getStaticProps = async ({ params }: StaticProps): Promise<
 }
 
 export const getStaticPaths = async () => {
+  const tasks: Promise<Collection[]>[] = []
   const collectionId = 'cb7f4670-623c-410e-b59e-da29fd96c691'
   const collectionViewId = '73f23905-79a0-4926-8780-0333d9a1993b'
-  const queryCollection = await NotionRepository.shared().queryCollection(
+  tasks.push(NotionRepository.shared().queryCollection(
     collectionId,
     collectionViewId,
-  )
-  const paths = queryCollection.filter(c => c.parentId === collectionId).map(c => { return { params: { pid: c.id } }})
+  ))
+
+  const collectionIdForDrafts = 'a2f54dd1-bf9b-4ddf-a0aa-079d59555043'
+  const collectionViewIdForDrafts = '159ab648-8e6b-443a-bf6d-2103ff5467d6'
+  if (process.env.APP_ENV !== 'production') {
+    tasks.push(NotionRepository.shared().queryCollection(
+      collectionIdForDrafts,
+      collectionViewIdForDrafts,
+    ))
+  }
+  const queryCollections: Collection[] = []
+  const result = await Promise.all(tasks)
+  const paths = queryCollections
+    .concat(...result)
+    .filter(c => c.parentId === collectionId || c.parentId === collectionIdForDrafts)
+    .map(c => { return { params: { pid: c.id } }})
   return {
     paths: paths,
     fallback: false,

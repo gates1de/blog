@@ -47,7 +47,7 @@ export const BlogContent = ({ pageId, pageChunks }: Props) => {
                 }
                 return (
                   <div key={chunk.id}>
-                    {chunk.contents.map((content) => {
+                    {chunk.contents.map((content, i) => {
                       if (content.text) {
                         return content.text
                       }
@@ -58,7 +58,7 @@ export const BlogContent = ({ pageId, pageChunks }: Props) => {
                       ) {
                         return (
                           <Link
-                            key={chunk.id}
+                            key={chunk.id + i}
                             href={
                               content.link.url.startsWith('/') &&
                               content.link.hash
