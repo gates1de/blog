@@ -1,3 +1,13 @@
+export type GetSignedUrlsRequestParams = {
+  urls: {
+    url: string
+    permissionRecord: {
+      id: string
+      table: 'block'
+    }
+  }[]
+}
+
 export type LoadPageChunkRequestParams = {
   pageId: string
   limit: number

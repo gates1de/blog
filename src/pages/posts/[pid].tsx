@@ -6,6 +6,7 @@ import { PageContent } from 'components/PageContent'
 import Collection from 'models/collection'
 import PageChunk from 'models/page-chunk'
 import NotionRepository from 'repositories/notion-repository'
+import SignedFileUrl from 'models/signed-file-url'
 
 type Props = {
   data?: any
@@ -19,6 +20,7 @@ type StaticProps = {
 
 const Post: NextPage<Props> = ({ data, path, pid }) => {
   const pageChunks = (JSON.parse(data) as any[]).map(d => new PageChunk(d))
+  console.dir(pageChunks)
   const titleChunkContents = pageChunks.find(c => c.type === 'page')?.contents || [{ text: 'Untitled' }]
   return (
     <Layout title={titleChunkContents[0].text} url={path}>
@@ -36,9 +38,28 @@ export const getStaticProps = async ({ params }: StaticProps): Promise<
   GetStaticPropsResult<Props>
 > => {
   try {
-    const pageChunks = await NotionRepository.shared().loadPageChunk(
+    let pageChunks = await NotionRepository.shared().loadPageChunk(
       params.pid,
     )
+    const getSignedFileUrlsTasks = pageChunks
+      .filter(c => c.type === 'image' && c.imageSource)
+      .map(c => {
+        return NotionRepository.shared().getSingedFileUrls(c.id, c.imageSource!)
+      })
+    const signedFileUrls = await Promise.all(getSignedFileUrlsTasks)
+    const flattenSignedFileUrls = ([] as SignedFileUrl[]).concat(...signedFileUrls)
+    pageChunks = pageChunks
+      .map(c => {
+        if (c.type !== 'image') {
+          return c
+        }
+        const signedFileUrl = flattenSignedFileUrls.find(s => c.id === s.id)
+        if (!signedFileUrl || !c.format) {
+          return c
+        }
+        c.format.display_source = signedFileUrl.url
+        return c
+      })
     const path = process.env.SITE_URL ? `${process.env.SITE_URL}/posts/${params.pid}` : ''
     return {
       props: { data: JSON.stringify(pageChunks), path: path, pid: params.pid },

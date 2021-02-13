@@ -2,7 +2,12 @@ import axios, { AxiosRequestConfig } from 'axios'
 
 import Collection from 'models/collection'
 import PageChunk from 'models/page-chunk'
-import { LoadPageChunkRequestParams, QueryCollectionRequestParams } from 'types'
+import SignedFileUrl from 'models/signed-file-url'
+import {
+  GetSignedUrlsRequestParams,
+  LoadPageChunkRequestParams,
+  QueryCollectionRequestParams,
+} from 'types'
 
 export default class NotionRepository {
   private static _instance: NotionRepository
@@ -14,6 +19,31 @@ export default class NotionRepository {
       this._instance = new NotionRepository()
     }
     return this._instance
+  }
+
+  getSingedFileUrls = async (
+    blockId: string,
+    url: string,
+  ): Promise<SignedFileUrl[]> => {
+    if (!process.env.NOTION_TOKEN) {
+      throw new Error('Not set process.env.NOTION_TOKEN')
+    }
+
+    const config: AxiosRequestConfig = {
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: process.env.NOTION_TOKEN,
+      },
+    }
+    const params: GetSignedUrlsRequestParams = {
+      urls: [{ url: url, permissionRecord: { table: 'block', id: blockId } }],
+    }
+    const result = await axios.post(
+      'https://www.notion.so/api/v3/getSignedFileUrls',
+      params,
+      config,
+    )
+    return SignedFileUrl.parseJSON(blockId, result.data)
   }
 
   loadPageChunk = async (pageId: string, limit = 50): Promise<PageChunk[]> => {

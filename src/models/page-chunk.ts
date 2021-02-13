@@ -1,8 +1,5 @@
 export default class PageChunk {
   id: string
-  version: string
-  type: string
-  properties: { title: any[] }
   contents: {
     text?: string
     link?: {
@@ -12,16 +9,21 @@ export default class PageChunk {
     }
   }[]
   created_time?: number
+  format?: { block_width: number; display_source: string }
   last_edited_time?: number
+  properties: { title: any[] }
+  type: string
+  version: string
 
   constructor(init?: Partial<PageChunk>) {
     this.id = init?.id || ''
-    this.version = init?.version || ''
-    this.type = init?.type || ''
-    this.properties = init?.properties || { title: [] }
     this.contents = []
     this.created_time = init?.created_time
+    this.format = init?.format
     this.last_edited_time = init?.last_edited_time
+    this.type = init?.type || ''
+    this.properties = init?.properties || { title: [] }
+    this.version = init?.version || ''
 
     const title = this.properties.title
     if (title && title.length > 0) {
@@ -88,6 +90,20 @@ export default class PageChunk {
     return `${date.getFullYear()}-${(date.getMonth() + 1)
       .toString()
       .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`
+  }
+
+  get imageSource(): string | undefined {
+    if (this.type !== 'image' || !this.format) {
+      return undefined
+    }
+    return this.format.display_source
+  }
+
+  get imageWidth(): number | undefined {
+    if (this.type !== 'image' || !this.format) {
+      return undefined
+    }
+    return this.format.block_width
   }
 
   get lastEditedTime(): number | undefined {

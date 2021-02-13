@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import styled from 'styled-components'
 
 import { Link } from 'components/Link'
@@ -41,6 +42,20 @@ export const BlogContent = ({ pageId, pageChunks }: Props) => {
                 )
               case 'header':
                 return <h1 key={chunk.id}>{chunk.contents[0].text || ''}</h1>
+              case 'image':
+                if (!chunk.imageSource || !chunk.imageWidth) {
+                  return null
+                }
+                return (
+                  <ImageContainer key={chunk.id}>
+                    <Image
+                      src={chunk.imageSource}
+                      width={chunk.imageWidth}
+                      height="auto"
+                      objectFit="contain"
+                    />
+                  </ImageContainer>
+                )
               case 'text':
                 if (chunk.contents.length === 0) {
                   return null
@@ -123,7 +138,7 @@ const Container = styled.div`
   h1 {
     font-size: 2.4rem;
     line-height: 3.2rem;
-    margin-top: 3rem;
+    margin-top: 4rem;
     margin-bottom: 1rem;
   }
 
@@ -160,4 +175,11 @@ const TitleContainer = styled.div`
 const AnnotationContainer = styled.div`
   font-size: 1.2rem;
   line-height: 2rem;
+`
+
+const ImageContainer = styled.div`
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
 `
