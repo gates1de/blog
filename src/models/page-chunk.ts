@@ -9,7 +9,7 @@ export default class PageChunk {
     }
   }[]
   created_time?: number
-  format?: { block_width: number; display_source: string }
+  format?: { block_width: number; display_source: string; page_icon: string }
   last_edited_time?: number
   properties: { title: any[] }
   type: string

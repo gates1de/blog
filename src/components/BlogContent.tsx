@@ -5,6 +5,8 @@ import { Link } from 'components/Link'
 import StyledDivider from 'components/StyledDivider'
 import PageChunk from 'models/page-chunk'
 
+import breakpoint from 'styles/breakpoint'
+
 type Props = {
   pageId: string
   pageChunks: PageChunk[]
@@ -87,6 +89,15 @@ export const BlogContent = ({ pageId, pageChunks }: Props) => {
                       }
                     })}
                   </div>
+                )
+              case 'callout':
+                return (
+                  <CalloutContainer key={chunk.id}>
+                    {chunk.format?.page_icon && (
+                      <span>{chunk.format?.page_icon}</span>
+                    )}
+                    {chunk.contents[0].text || ''}
+                  </CalloutContainer>
                 )
               default:
                 return null
@@ -172,6 +183,29 @@ const TitleContainer = styled.div`
     opacity: 0.5;
   }
 `
+const CalloutContainer = styled.div`
+  background-color: #fff7e8;
+  border-radius: 1.2rem;
+  display: flex;
+  font-size: 1.6rem;
+  justify-content: center;
+  line-height: 3rem;
+  margin: 2rem auto auto;
+  padding: 2rem 3rem;
+  width: 54rem;
+
+  span {
+    margin-right: 1rem;
+  }
+
+  @media (max-width: ${breakpoint.tablet}px) {
+    font-size: 1.4rem;
+    line-height: 2.4rem;
+    padding: 2rem;
+    width: 100%;
+  }
+`
+
 const AnnotationContainer = styled.div`
   font-size: 1.2rem;
   line-height: 2rem;

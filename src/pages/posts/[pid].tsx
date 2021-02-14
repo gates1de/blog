@@ -20,7 +20,6 @@ type StaticProps = {
 
 const Post: NextPage<Props> = ({ data, path, pid }) => {
   const pageChunks = (JSON.parse(data) as any[]).map(d => new PageChunk(d))
-  console.dir(pageChunks)
   const titleChunkContents = pageChunks.find(c => c.type === 'page')?.contents || [{ text: 'Untitled' }]
   return (
     <Layout title={titleChunkContents[0].text} url={path}>
