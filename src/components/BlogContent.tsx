@@ -66,6 +66,9 @@ export const BlogContent = ({ pageId, pageChunks }: Props) => {
                   <div key={chunk.id}>
                     {chunk.contents.map((content, i) => {
                       if (content.text) {
+                        if (content.isBold) {
+                          return <b key={chunk.id + i}>{content.text}</b>
+                        }
                         return content.text
                       }
                       if (

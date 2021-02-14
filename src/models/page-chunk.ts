@@ -2,6 +2,7 @@ export default class PageChunk {
   id: string
   contents: {
     text?: string
+    isBold?: boolean
     link?: {
       text: string
       url: string
@@ -32,31 +33,46 @@ export default class PageChunk {
           return
         }
 
-        // parse plane text
-        if (p.length === 1 && typeof p[0] === 'string') {
-          this.contents.push({ text: p[0] })
-          return
-        }
-
-        // parse link
-        if (
-          p.length !== 2 ||
-          (typeof p[0] !== 'string' && !Array.isArray(p[1])) ||
-          p[1][0].length !== 2
-        ) {
-          return
-        }
-
-        const linkValues = p[1][0]
-        if (linkValues[0] === 'a' && typeof linkValues[1] === 'string') {
-          const url = linkValues[1]
-          let hash: string | undefined
-          if (url.startsWith('/') && url.includes('#')) {
-            hash = url.split('#')[1]
+        if (p.length > 0 && typeof p[0] === 'string') {
+          // parse plane text
+          if (p.length === 1) {
+            this.contents.push({ text: p[0] })
+            return
           }
-          this.contents.push({
-            link: { text: p[0] || '', url: linkValues[1], hash: hash },
-          })
+
+          // parse bold text
+          if (
+            p.length === 2 &&
+            Array.isArray(p[1]) &&
+            p[1].length > 0 &&
+            Array.isArray(p[1][0]) &&
+            p[1][0].length === 1 &&
+            p[1][0][0] === 'b'
+          ) {
+            this.contents.push({ text: p[0], isBold: true })
+            return
+          }
+
+          // parse link
+          if (
+            p.length === 2 &&
+            typeof p[0] === 'string' &&
+            Array.isArray(p[1]) &&
+            p[1][0].length === 2 &&
+            p[1][0][0] === 'a' &&
+            typeof p[1][0][1] === 'string'
+          ) {
+            const linkValues = p[1][0]
+            const url = linkValues[1]
+            let hash: string | undefined
+            if (url.startsWith('/') && url.includes('#')) {
+              hash = url.split('#')[1]
+            }
+            this.contents.push({
+              link: { text: p[0] || '', url: linkValues[1], hash: hash },
+            })
+            return
+          }
         }
       })
     }
