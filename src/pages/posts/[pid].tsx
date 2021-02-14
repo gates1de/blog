@@ -7,22 +7,24 @@ import Collection from 'models/collection'
 import PageChunk from 'models/page-chunk'
 import NotionRepository from 'repositories/notion-repository'
 import SignedFileUrl from 'models/signed-file-url'
+import { ogpImages } from 'constants/image-path'
 
 type Props = {
   data?: any
-  pid: string
+  ogpImageURL: string
   path: string
+  pid: string
 }
 
 type StaticProps = {
   params: { pid: string }
 }
 
-const Post: NextPage<Props> = ({ data, path, pid }) => {
+const Post: NextPage<Props> = ({ data, ogpImageURL, path, pid }) => {
   const pageChunks = (JSON.parse(data) as any[]).map(d => new PageChunk(d))
   const titleChunkContents = pageChunks.find(c => c.type === 'page')?.contents || [{ text: 'Untitled' }]
   return (
-    <Layout title={titleChunkContents[0].text} url={path}>
+    <Layout title={titleChunkContents[0].text} url={path} imageURL={ogpImageURL}>
       <PageContent>
         <BlogContent
           pageChunks={pageChunks}
@@ -61,7 +63,7 @@ export const getStaticProps = async ({ params }: StaticProps): Promise<
       })
     const path = process.env.SITE_URL ? `${process.env.SITE_URL}/posts/${params.pid}` : ''
     return {
-      props: { data: JSON.stringify(pageChunks), path: path, pid: params.pid },
+      props: { data: JSON.stringify(pageChunks), ogpImageURL: ogpImages[params.pid] || '', path: path, pid: params.pid },
       revalidate: true,
     } as GetStaticPropsResult<Props>
   } catch (error) {
