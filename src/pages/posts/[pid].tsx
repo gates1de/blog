@@ -11,6 +11,7 @@ import { ogpImages } from 'constants/image-path'
 
 type Props = {
   data?: any
+  description: string
   ogpImageURL: string
   path: string
   pid: string
@@ -20,11 +21,11 @@ type StaticProps = {
   params: { pid: string }
 }
 
-const Post: NextPage<Props> = ({ data, ogpImageURL, path, pid }) => {
+const Post: NextPage<Props> = ({ data, description, ogpImageURL, path, pid }) => {
   const pageChunks = (JSON.parse(data) as any[]).map(d => new PageChunk(d))
   const titleChunkContents = pageChunks.find(c => c.type === 'page')?.contents || [{ text: 'Untitled' }]
   return (
-    <Layout title={titleChunkContents[0].text} url={path} imageURL={ogpImageURL}>
+    <Layout title={titleChunkContents[0].text} url={path} imageURL={ogpImageURL} description={description}>
       <PageContent>
         <BlogContent
           pageChunks={pageChunks}
@@ -62,8 +63,13 @@ export const getStaticProps = async ({ params }: StaticProps): Promise<
         return c
       })
     const path = process.env.SITE_URL ? `${process.env.SITE_URL}/posts/${params.pid}` : ''
+    const description = pageChunks
+      .filter(c => ['header', 'text', 'link'].includes(c.type))
+      .map(c => {
+        return c.contents.map(content => content.text || '').join('')
+      }).slice(undefined, 5).join('\n') + '...'
     return {
-      props: { data: JSON.stringify(pageChunks), ogpImageURL: ogpImages[params.pid] || '', path: path, pid: params.pid },
+      props: { data: JSON.stringify(pageChunks), description: description, ogpImageURL: ogpImages[params.pid] || '', path: path, pid: params.pid },
       revalidate: true,
     } as GetStaticPropsResult<Props>
   } catch (error) {
