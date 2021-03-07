@@ -30,13 +30,19 @@ export const getServerSideProps = async (): Promise<
     const collectionIdForDaily = 'cb7f4670-623c-410e-b59e-da29fd96c691'
     const collectionViewIdForDaily = '73f23905-79a0-4926-8780-0333d9a1993b'
     tasks.push(
-      NotionRepository.shared().queryCollection(collectionIdForDaily, collectionViewIdForDaily),
+      NotionRepository.shared().queryCollection(
+        collectionIdForDaily,
+        collectionViewIdForDaily,
+      ),
     )
 
     const collectionIdForTech = '4e0c474c-0ceb-48a0-b4c9-94da93f48c71'
     const collectionViewIdForTech = '41e53f7e-d7c9-400f-8ee3-2e5a2ffdf9f9'
     tasks.push(
-      NotionRepository.shared().queryCollection(collectionIdForTech, collectionViewIdForTech),
+      NotionRepository.shared().queryCollection(
+        collectionIdForTech,
+        collectionViewIdForTech,
+      ),
     )
 
     const collectionIdForDrafts = 'a2f54dd1-bf9b-4ddf-a0aa-079d59555043'

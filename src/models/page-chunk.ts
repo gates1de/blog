@@ -3,6 +3,8 @@ export default class PageChunk {
   contents: {
     text?: string
     isBold?: boolean
+    isCodeBlock?: boolean
+    language?: string // for type === 'code'
     link?: {
       text: string
       url: string
@@ -12,7 +14,7 @@ export default class PageChunk {
   created_time?: number
   format?: { block_width: number; display_source: string; page_icon: string }
   last_edited_time?: number
-  properties: { title: any[] }
+  properties: { title: any[]; language?: string }
   type: string
   version: string
 
@@ -40,16 +42,19 @@ export default class PageChunk {
             return
           }
 
-          // parse bold text
+          // parse [bold, code block] text
           if (
             p.length === 2 &&
             Array.isArray(p[1]) &&
             p[1].length > 0 &&
             Array.isArray(p[1][0]) &&
-            p[1][0].length === 1 &&
-            p[1][0][0] === 'b'
+            p[1][0].length === 1
           ) {
-            this.contents.push({ text: p[0], isBold: true })
+            if (p[1][0][0] === 'b') {
+              this.contents.push({ text: p[0], isBold: true })
+            } else if (p[1][0][0] === 'c') {
+              this.contents.push({ text: p[0], isCodeBlock: true })
+            }
             return
           }
 

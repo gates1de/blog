@@ -70,7 +70,7 @@ export const getStaticProps = async ({ params }: StaticProps): Promise<
       }).slice(undefined, 5).join('\n') + '...'
     return {
       props: { data: JSON.stringify(pageChunks), description: description, ogpImageURL: ogpImages[params.pid] || '', path: path, pid: params.pid },
-      revalidate: true,
+      revalidate: 1,
     } as GetStaticPropsResult<Props>
   } catch (error) {
     throw error

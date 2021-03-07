@@ -1,5 +1,7 @@
 import Image from 'next/image'
 import styled from 'styled-components'
+import SyntaxHighlighter from 'react-syntax-highlighter'
+import githubGist from 'react-syntax-highlighter/dist/cjs/styles/hljs/github-gist'
 
 import { Link } from 'components/Link'
 import StyledDivider from 'components/StyledDivider'
@@ -63,11 +65,18 @@ export const BlogContent = ({ pageId, pageChunks }: Props) => {
                   return null
                 }
                 return (
-                  <div key={chunk.id}>
+                  <TextContainer key={chunk.id}>
                     {chunk.contents.map((content, i) => {
                       if (content.text) {
                         if (content.isBold) {
                           return <b key={chunk.id + i}>{content.text}</b>
+                        }
+                        if (content.isCodeBlock) {
+                          return (
+                            <span key={chunk.id + i} className="codeblock">
+                              {content.text}
+                            </span>
+                          )
                         }
                         return content.text
                       }
@@ -91,7 +100,7 @@ export const BlogContent = ({ pageId, pageChunks }: Props) => {
                         )
                       }
                     })}
-                  </div>
+                  </TextContainer>
                 )
               case 'callout':
                 return (
@@ -101,6 +110,39 @@ export const BlogContent = ({ pageId, pageChunks }: Props) => {
                     )}
                     {chunk.contents[0].text || ''}
                   </CalloutContainer>
+                )
+              case 'code':
+                if (chunk.contents.length === 0) {
+                  return null
+                }
+                return (
+                  <CodeContainer key={chunk.id}>
+                    {chunk.contents.map((content, i) => {
+                      if (!content.text) {
+                        return null
+                      }
+                      return (
+                        <SyntaxHighlighter
+                          key={chunk.id + i}
+                          codeTagProps={{
+                            style: {
+                              fontFamily:
+                                'source-code-pro,Menlo,Monaco,Consolas,Courier New,monospace',
+                              fontSize: '0.9em',
+                            },
+                          }}
+                          customStyle={{
+                            backgroundColor: '#FAFAFA',
+                            padding: '2rem',
+                          }}
+                          language={chunk.properties.language}
+                          style={githubGist}
+                        >
+                          {content.text}
+                        </SyntaxHighlighter>
+                      )
+                    })}
+                  </CodeContainer>
                 )
               default:
                 return null
@@ -186,16 +228,17 @@ const TitleContainer = styled.div`
     opacity: 0.5;
   }
 `
+
 const CalloutContainer = styled.div`
   background-color: #fff7e8;
   border-radius: 1.2rem;
   display: flex;
   font-size: 1.6rem;
-  justify-content: center;
+  justify-content: left;
   line-height: 3rem;
   margin: 2rem auto auto;
   padding: 2rem 3rem;
-  width: 54rem;
+  width: 60rem;
 
   span {
     margin-right: 1rem;
@@ -207,6 +250,25 @@ const CalloutContainer = styled.div`
     padding: 2rem;
     width: 100%;
   }
+`
+
+const TextContainer = styled.div`
+  line-height: 3rem;
+
+  span.codeblock {
+    background: rgba(135, 131, 120, 0.15);
+    border-radius: 3px;
+    color: #eb5757;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier,
+      monospace;
+    font-size: 85%;
+    line-height: normal;
+    padding: 0.2em 0.4em;
+  }
+`
+
+const CodeContainer = styled.div`
+  line-height: 2.4rem;
 `
 
 const AnnotationContainer = styled.div`
