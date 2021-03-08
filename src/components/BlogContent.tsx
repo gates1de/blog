@@ -8,6 +8,7 @@ import StyledDivider from 'components/StyledDivider'
 import PageChunk from 'models/page-chunk'
 
 import breakpoint from 'styles/breakpoint'
+import { YoutubeContainer } from './YoutubeContainer'
 
 type Props = {
   pageId: string
@@ -143,6 +144,22 @@ export const BlogContent = ({ pageId, pageChunks }: Props) => {
                       )
                     })}
                   </CodeContainer>
+                )
+              case 'video':
+                if (
+                  !chunk.format?.display_source ||
+                  !chunk.format.block_aspect_ratio ||
+                  !chunk.format.block_width
+                ) {
+                  return null
+                }
+                return (
+                  <YoutubeContainer
+                    key={chunk.id}
+                    aspectRatio={chunk.format.block_aspect_ratio}
+                    videoURL={chunk.format.display_source}
+                    width={chunk.format.block_width}
+                  />
                 )
               default:
                 return null

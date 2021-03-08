@@ -12,7 +12,12 @@ export default class PageChunk {
     }
   }[]
   created_time?: number
-  format?: { block_width: number; display_source: string; page_icon: string }
+  format?: {
+    block_aspect_ratio?: number
+    block_width: number
+    display_source: string
+    page_icon?: string
+  }
   last_edited_time?: number
   properties: { title: any[]; language?: string }
   type: string
