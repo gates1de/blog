@@ -66,8 +66,8 @@ export const getStaticProps = async ({ params }: StaticProps): Promise<
     const description = pageChunks
       .filter(c => ['header', 'text', 'link'].includes(c.type))
       .map(c => {
-        return c.contents.map(content => content.text || '').join('')
-      }).slice(undefined, 5).join('\n') + '...'
+        return c.contents.map(content => content.text || content.link?.text || '').join('')
+      }).slice(undefined, 5).join('\n').slice(0, 150) + '...'
     return {
       props: { data: JSON.stringify(pageChunks), description: description, ogpImageURL: ogpImages[params.pid] || '', path: path, pid: params.pid },
       revalidate: 1,
