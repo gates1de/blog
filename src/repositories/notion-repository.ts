@@ -127,6 +127,6 @@ export default class NotionRepository {
       throw new Error('Page data not found')
     }
 
-    return Collection.parseJSON(result.data)
+    return Collection.parseJSON(collectionId, result.data)
   }
 }

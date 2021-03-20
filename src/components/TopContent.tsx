@@ -20,9 +20,12 @@ export const TopContent = ({ collections }: Props) => {
                 return (
                   <Link key={collection.id} href={'/posts/' + collection.id}>
                     <TitleContainer>
-                      {collection.createdTimeString && (
-                        <p>{collection.createdTimeString}</p>
-                      )}
+                      <p>
+                        <CategoryTag category={collection.category}>
+                          {collection?.category || ''}
+                        </CategoryTag>
+                        {collection?.createdTimeString || ''}
+                      </p>
                       {collection.title}
                     </TitleContainer>
                   </Link>
@@ -71,10 +74,21 @@ const TitleContainer = styled.div`
     line-height: 3rem;
     margin: 1rem 0;
   }
+`
 
-  span {
-    font-size: 1.4rem;
-    margin-left: 1rem;
-    opacity: 0.5;
-  }
+const CategoryTag = styled.span<{ category?: string }>`
+  background-color: ${props => {
+    switch (props.category) {
+      case 'Daily':
+        return '#ffa83b77'
+      case 'Tech':
+        return '#0089ff55'
+      default:
+        return '#5a5a5a55'
+    }
+  }};
+  border-radius: 0.5rem;
+  font-size: 1.4rem;
+  margin-right: 2rem;
+  padding: 0.5rem;
 `

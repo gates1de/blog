@@ -6,6 +6,7 @@ export default class Collection {
   type: string
   properties: { [key: string]: any }
   content: string[]
+  category?: string
   created_time?: number
   last_edited_time?: number
 
@@ -19,12 +20,17 @@ export default class Collection {
     this.created_time = init?.created_time
     this.last_edited_time = init?.last_edited_time
     this.title = this.properties.title || 'Untitled'
+    this.category = init?.category
   }
 
-  static parseJSON = (json: any): Collection[] => {
+  static parseJSON = (id: string, json: any): Collection[] => {
     if (!json) {
       return []
     }
+    let category = ''
+    try {
+      category = json.recordMap.collection[id]?.value.name[0][0]
+    } catch {}
     const block = json.recordMap.block
     const collections: Collection[] = []
     Object.keys(block).forEach((key) => {
@@ -32,7 +38,10 @@ export default class Collection {
       if (!collectionData.value) {
         return
       }
-      collections.push(new Collection(collectionData.value))
+      collections.push(new Collection({
+        category: category,
+        ...collectionData.value,
+      }))
     })
     return collections
   }
