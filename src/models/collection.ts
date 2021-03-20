@@ -38,10 +38,12 @@ export default class Collection {
       if (!collectionData.value) {
         return
       }
-      collections.push(new Collection({
-        category: category,
-        ...collectionData.value,
-      }))
+      collections.push(
+        new Collection({
+          category: category,
+          ...collectionData.value,
+        }),
+      )
     })
     return collections
   }

@@ -77,7 +77,7 @@ const TitleContainer = styled.div`
 `
 
 const CategoryTag = styled.span<{ category?: string }>`
-  background-color: ${props => {
+  background-color: ${(props) => {
     switch (props.category) {
       case 'Daily':
         return '#ffa83b77'
