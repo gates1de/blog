@@ -5,17 +5,20 @@ import githubGist from 'react-syntax-highlighter/dist/cjs/styles/hljs/github-gis
 
 import { Link } from 'components/Link'
 import StyledDivider from 'components/StyledDivider'
+import { CategoryTag } from 'components/TopContent'
+import { YoutubeContainer } from 'components/YoutubeContainer'
+import Collection from 'models/collection'
 import PageChunk from 'models/page-chunk'
 
 import breakpoint from 'styles/breakpoint'
-import { YoutubeContainer } from './YoutubeContainer'
 
 type Props = {
-  pageId: string
+  collection: Collection
   pageChunks: PageChunk[]
+  pageId: string
 }
 
-export const BlogContent = ({ pageId, pageChunks }: Props) => {
+export const BlogContent = ({ collection, pageChunks, pageId }: Props) => {
   return (
     <Container>
       {pageChunks.length === 0 ? (
@@ -33,10 +36,13 @@ export const BlogContent = ({ pageId, pageChunks }: Props) => {
                     {chunk.contents[0].text || ''}
                     {chunk.createdTimeString && (
                       <p>
+                        <CategoryTag category={collection.category}>
+                          {collection?.category || ''}
+                        </CategoryTag>
                         作成日: {chunk.createdTimeString}
                         {chunk.lastEditedTimeString !==
                           chunk.createdTimeString && (
-                          <span>
+                          <span className="last-edited-time">
                             {' '}
                             (最終編集日: {chunk.lastEditedTimeString} )
                           </span>
@@ -239,7 +245,7 @@ const TitleContainer = styled.div`
     margin: 1rem 0;
   }
 
-  span {
+  span.last-edited-time {
     font-size: 1.4rem;
     margin-left: 1rem;
     opacity: 0.5;

@@ -27,6 +27,7 @@ module.exports = {
     "prettier"
   ],
   "rules": {
+    "prefer-const": ["error", { "destructuring": "all" }],
     "prettier/prettier": "warn",
     "@typescript-eslint/camelcase": "off", // https://github.com/typescript-eslint/typescript-eslint/issues/2077
     "@typescript-eslint/no-use-before-define": "warn",

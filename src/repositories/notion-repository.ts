@@ -46,7 +46,13 @@ export default class NotionRepository {
     return SignedFileUrl.parseJSON(blockId, result.data)
   }
 
-  loadPageChunk = async (pageId: string, limit = 50): Promise<PageChunk[]> => {
+  loadPageChunk = async (
+    pageId: string,
+    limit = 50,
+  ): Promise<{
+    pageChunks: PageChunk[]
+    collection: Collection
+  }> => {
     if (!process.env.NOTION_TOKEN) {
       throw new Error('Not set process.env.NOTION_TOKEN')
     }
@@ -82,12 +88,29 @@ export default class NotionRepository {
     if (
       !result.data ||
       !result.data.recordMap ||
-      !result.data.recordMap.block
+      !result.data.recordMap.block ||
+      !result.data.recordMap.collection
     ) {
       throw new Error('Page data not found')
     }
 
-    return PageChunk.parseJSON(result.data)
+    const pageChunks = PageChunk.parseJSON(result.data)
+    const mainPageChunk = pageChunks.find((p) => p.id === pageId)
+    if (!mainPageChunk || !mainPageChunk.parent_id) {
+      return []
+    }
+    const collectionId = mainPageChunk.parent_id
+    const collection = new Collection(
+      result.data.recordMap.collection[collectionId]?.value,
+    )
+    try {
+      collection.category =
+        result.data.recordMap.collection[collectionId]?.value.name[0][0]
+    } catch {}
+    return {
+      pageChunks: pageChunks,
+      collection: collection,
+    }
   }
 
   queryCollection = async (

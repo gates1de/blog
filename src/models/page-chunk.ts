@@ -1,5 +1,6 @@
 export default class PageChunk {
   id: string
+  parent_id: string
   contents: {
     text?: string
     isBold?: boolean
@@ -25,6 +26,7 @@ export default class PageChunk {
 
   constructor(init?: Partial<PageChunk>) {
     this.id = init?.id || ''
+    this.parent_id = init?.parent_id || ''
     this.contents = []
     this.created_time = init?.created_time
     this.format = init?.format

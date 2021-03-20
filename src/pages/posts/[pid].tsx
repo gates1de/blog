@@ -10,7 +10,8 @@ import SignedFileUrl from 'models/signed-file-url'
 import { ogpImages } from 'constants/image-path'
 
 type Props = {
-  data?: any
+  pageChunkData?: any
+  collectionData?: any
   description: string
   ogpImageURL: string
   path: string
@@ -22,13 +23,17 @@ type StaticProps = {
 }
 
 const Post: NextPage<Props> = ({
-  data,
+  pageChunkData,
+  collectionData,
   description,
   ogpImageURL,
   path,
   pid,
 }) => {
-  const pageChunks = (JSON.parse(data) as any[]).map((d) => new PageChunk(d))
+  const pageChunks = (JSON.parse(pageChunkData) as any[]).map(
+    (d) => new PageChunk(d),
+  )
+  const collection = new Collection(JSON.parse(collectionData))
   const titleChunkContents = pageChunks.find((c) => c.type === 'page')
     ?.contents || [{ text: 'Untitled' }]
   return (
@@ -39,7 +44,11 @@ const Post: NextPage<Props> = ({
       description={description}
     >
       <PageContent>
-        <BlogContent pageChunks={pageChunks} pageId={pid} />
+        <BlogContent
+          collection={collection}
+          pageChunks={pageChunks}
+          pageId={pid}
+        />
       </PageContent>
     </Layout>
   )
@@ -49,7 +58,10 @@ export const getStaticProps = async ({
   params,
 }: StaticProps): Promise<GetStaticPropsResult<Props>> => {
   try {
-    let pageChunks = await NotionRepository.shared().loadPageChunk(params.pid)
+    let {
+      pageChunks,
+      collection,
+    } = await NotionRepository.shared().loadPageChunk(params.pid)
     const getSignedFileUrlsTasks = pageChunks
       .filter((c) => c.type === 'image' && c.imageSource)
       .map((c) => {
@@ -86,7 +98,8 @@ export const getStaticProps = async ({
         .slice(0, 150) + '...'
     return {
       props: {
-        data: JSON.stringify(pageChunks),
+        pageChunkData: JSON.stringify(pageChunks),
+        collectionData: JSON.stringify(collection),
         description: description,
         ogpImageURL: ogpImages[params.pid] || '',
         path: path,
