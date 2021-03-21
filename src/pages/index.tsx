@@ -57,7 +57,9 @@ export const getServerSideProps = async (): Promise<
     }
     let queryCollections: Collection[] = []
     const result = await Promise.all(tasks)
-    queryCollections = queryCollections.concat(...result)
+    queryCollections = queryCollections
+      .concat(...result)
+      .sort((a, b) => (b.createdTime || 0) - (a.createdTime || 0))
     return {
       props: {
         data: JSON.stringify(

@@ -1,6 +1,8 @@
+import { useMemo, useState } from 'react'
 import styled from 'styled-components'
 
 import { Link } from 'components/Link'
+import { CategoryButtons, Category } from 'components/CategoryButtons'
 import Collection from 'models/collection'
 
 type Props = {
@@ -8,13 +10,22 @@ type Props = {
 }
 
 export const TopContent = ({ collections }: Props) => {
+  const [category, setCategory] = useState<CategoryType>(Category.All)
+  const filteredCollections = useMemo(() => {
+    if (category === Category.All) {
+      return collections
+    }
+    return collections.filter((c) => c.category === category)
+  }, [collections, category])
+
   return (
     <Container>
+      <CategoryButtons selectedCategory={category} setCategory={setCategory} />
       {collections.length === 0 ? (
         <p>記事データがありません</p>
       ) : (
         <>
-          {collections.map((collection) => {
+          {filteredCollections.map((collection) => {
             switch (collection.type) {
               case 'page':
                 return (
