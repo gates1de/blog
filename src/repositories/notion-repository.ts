@@ -97,7 +97,7 @@ export default class NotionRepository {
     const pageChunks = PageChunk.parseJSON(result.data)
     const mainPageChunk = pageChunks.find((p) => p.id === pageId)
     if (!mainPageChunk || !mainPageChunk.parent_id) {
-      return []
+      return { pageChunks: [], collection: new Collection() }
     }
     const collectionId = mainPageChunk.parent_id
     const collection = new Collection(

@@ -7,13 +7,12 @@ export enum Category {
   Tech = 'Tech',
 }
 
-type CategoryType = 'All' | 'Daily' | 'Tech'
+export type CategoryType = 'All' | 'Daily' | 'Tech'
 
 export const CategoryButtons: React.FC<{
   selectedCategory: CategoryType
   setCategory: Dispatch<SetStateAction<CategoryType>>
 }> = ({ selectedCategory, setCategory }) => {
-  console.dir(selectedCategory)
   return (
     <Container>
       {Object.entries(Category).map((value) => (

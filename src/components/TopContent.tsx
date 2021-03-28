@@ -2,7 +2,11 @@ import { useMemo, useState } from 'react'
 import styled from 'styled-components'
 
 import { Link } from 'components/Link'
-import { CategoryButtons, Category } from 'components/CategoryButtons'
+import {
+  CategoryButtons,
+  Category,
+  CategoryType,
+} from 'components/CategoryButtons'
 import Collection from 'models/collection'
 
 type Props = {
