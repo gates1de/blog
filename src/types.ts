@@ -30,10 +30,15 @@ export type QueryCollectionRequestParams = {
   collectionId: string
   collectionViewId: string
   loader: {
-    limit?: number
+    reducers: {
+      collection_group_results: {
+        limit?: number
+        type: 'results'
+      }
+    }
     loadContentCover?: boolean
     searchQuery?: string
-    type: 'table'
+    type: 'reducer'
     userTimeZone?: string
   }
   query?: { [key: string]: any }

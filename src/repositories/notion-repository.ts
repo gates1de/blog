@@ -132,8 +132,13 @@ export default class NotionRepository {
       collectionId: collectionId,
       collectionViewId: collectionViewId,
       loader: {
-        limit: limit,
-        type: 'table',
+        reducers: {
+          collection_group_results: {
+            limit: limit,
+            type: 'results',
+          },
+        },
+        type: 'reducer',
         userTimeZone: 'Azia/Tokyo',
       },
     }
