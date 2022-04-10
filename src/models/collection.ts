@@ -31,7 +31,7 @@ export default class Collection {
     try {
       category = json.recordMap.collection[id]?.value.name[0][0]
     } catch {}
-    const block = json.recordMap.block
+    const block = json.recordMap.block || []
     const collections: Collection[] = []
     Object.keys(block).forEach((key) => {
       const collectionData = block[key]

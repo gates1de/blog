@@ -27,21 +27,25 @@ export const getServerSideProps = async (): Promise<
   try {
     // FIXME: fetch collection id using loadPageChunk
     const tasks: Promise<Collection[]>[] = []
+    const spaceId = 'fd81ab51-dc87-429c-a482-24ce801aaf66'
+
     const collectionIdForDaily = 'cb7f4670-623c-410e-b59e-da29fd96c691'
     const collectionViewIdForDaily = '73f23905-79a0-4926-8780-0333d9a1993b'
     tasks.push(
       NotionRepository.shared().queryCollection(
         collectionIdForDaily,
         collectionViewIdForDaily,
+        spaceId,
       ),
     )
 
     const collectionIdForTech = '4e0c474c-0ceb-48a0-b4c9-94da93f48c71'
-    const collectionViewIdForTech = '41e53f7e-d7c9-400f-8ee3-2e5a2ffdf9f9'
+    const collectionViewIdForTech = '04307066-2147-4cec-b5ac-ae179b8a2b05'
     tasks.push(
       NotionRepository.shared().queryCollection(
         collectionIdForTech,
         collectionViewIdForTech,
+        spaceId,
       ),
     )
 
@@ -52,6 +56,7 @@ export const getServerSideProps = async (): Promise<
         NotionRepository.shared().queryCollection(
           collectionIdForDrafts,
           collectionViewIdForDrafts,
+          spaceId,
         ),
       )
     }

@@ -116,6 +116,7 @@ export default class NotionRepository {
   queryCollection = async (
     collectionId: string,
     collectionViewId: string,
+    spaceId: string,
     limit?: number,
   ): Promise<Collection[]> => {
     if (!process.env.NOTION_TOKEN) {
@@ -129,8 +130,14 @@ export default class NotionRepository {
       },
     }
     const params: QueryCollectionRequestParams = {
-      collectionId: collectionId,
-      collectionViewId: collectionViewId,
+      collection: {
+        id: collectionId,
+        spaceId: spaceId,
+      },
+      collectionView: {
+        id: collectionViewId,
+        spaceId: spaceId,
+      },
       loader: {
         reducers: {
           collection_group_results: {
@@ -142,15 +149,16 @@ export default class NotionRepository {
         userTimeZone: 'Azia/Tokyo',
       },
     }
+
     const result = await axios.post(
       'https://www.notion.so/api/v3/queryCollection',
       params,
       config,
     )
+
     if (
       !result.data ||
-      !result.data.recordMap ||
-      !result.data.recordMap.block
+      !result.data.recordMap
     ) {
       throw new Error('Page data not found')
     }

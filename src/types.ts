@@ -27,8 +27,14 @@ export type LoadPageChunkRequestParams = {
 }
 
 export type QueryCollectionRequestParams = {
-  collectionId: string
-  collectionViewId: string
+  collection: {
+    id: string
+    spaceId: string
+  }
+  collectionView: {
+    id: string
+    spaceId: string
+  }
   loader: {
     reducers: {
       collection_group_results: {

@@ -62,7 +62,7 @@ export const BlogContent = ({ collection, pageChunks, pageId }: Props) => {
                     <Image
                       src={chunk.imageSource}
                       width={chunk.imageWidth}
-                      height="auto"
+                      height="100%"
                       objectFit="contain"
                     />
                   </ImageContainer>
@@ -124,11 +124,9 @@ export const BlogContent = ({ collection, pageChunks, pageId }: Props) => {
                 }
                 return (
                   <CodeContainer key={chunk.id}>
-                    {chunk.contents.map((content, i) => {
-                      if (!content.text) {
-                        return null
-                      }
-                      return (
+                    {chunk.contents
+                      .filter(content => content.text)
+                      .map((content, i) => (
                         <SyntaxHighlighter
                           key={chunk.id + i}
                           codeTagProps={{
@@ -148,7 +146,7 @@ export const BlogContent = ({ collection, pageChunks, pageId }: Props) => {
                           {content.text}
                         </SyntaxHighlighter>
                       )
-                    })}
+                    )}
                   </CodeContainer>
                 )
               case 'video':

@@ -1,6 +1,7 @@
 // REF: https://github.com/zeit/next.js/tree/canary/examples/with-typescript-styled-components
 import Document, {
   DocumentContext,
+  Html,
   Head,
   Main,
   NextScript,
@@ -36,13 +37,13 @@ export default class AppDocument extends Document {
 
   render() {
     return (
-      <html>
+      <Html>
         <Head />
         <body>
           <Main />
           <NextScript />
         </body>
-      </html>
+      </Html>
     )
   }
 }
