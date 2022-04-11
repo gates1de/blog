@@ -3,14 +3,6 @@ import styled from 'styled-components'
 
 import breakpoint from 'styles/breakpoint'
 
-export const PageContent: React.FC = ({ children }) => {
-  return (
-    <ScrollContainer>
-      <Container>{children}</Container>
-    </ScrollContainer>
-  )
-}
-
 const ScrollContainer = styled.div`
   width: 100%;
   overflow: auto;
@@ -27,3 +19,12 @@ const Container = styled.div`
     width: 100%;
   }
 `
+export const PageContent: React.VFC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  return (
+    <ScrollContainer>
+      <Container>{children}</Container>
+    </ScrollContainer>
+  )
+}

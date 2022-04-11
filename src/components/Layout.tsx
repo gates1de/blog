@@ -7,6 +7,7 @@ import GlobalStyle from 'styles/global'
 import { NavigationItem } from 'types'
 
 type Props = {
+  children?: React.ReactNode
   description?: string
   imageURL?: string
   navigationItems?: Array<NavigationItem>
