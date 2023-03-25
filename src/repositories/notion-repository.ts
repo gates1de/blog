@@ -156,10 +156,7 @@ export default class NotionRepository {
       config,
     )
 
-    if (
-      !result.data ||
-      !result.data.recordMap
-    ) {
+    if (!result.data || !result.data.recordMap) {
       throw new Error('Page data not found')
     }
 

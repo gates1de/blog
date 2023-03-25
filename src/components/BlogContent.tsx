@@ -60,10 +60,10 @@ export const BlogContent = ({ collection, pageChunks, pageId }: Props) => {
                 return (
                   <ImageContainer key={chunk.id}>
                     <Image
+                      alt=""
                       src={chunk.imageSource}
                       width={chunk.imageWidth}
-                      height="100%"
-                      objectFit="contain"
+                      style={{ height: '100%', objectFit: 'contain' }}
                     />
                   </ImageContainer>
                 )
@@ -125,7 +125,7 @@ export const BlogContent = ({ collection, pageChunks, pageId }: Props) => {
                 return (
                   <CodeContainer key={chunk.id}>
                     {chunk.contents
-                      .filter(content => content.text)
+                      .filter((content) => content.text)
                       .map((content, i) => (
                         <SyntaxHighlighter
                           key={chunk.id + i}
@@ -143,10 +143,9 @@ export const BlogContent = ({ collection, pageChunks, pageId }: Props) => {
                           language={chunk.properties.language}
                           style={githubGist}
                         >
-                          {content.text}
+                          {content.text || ''}
                         </SyntaxHighlighter>
-                      )
-                    )}
+                      ))}
                   </CodeContainer>
                 )
               case 'video':

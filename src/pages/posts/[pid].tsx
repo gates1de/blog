@@ -58,10 +58,8 @@ export const getStaticProps = async ({
   params,
 }: StaticProps): Promise<GetStaticPropsResult<Props>> => {
   try {
-    let {
-      pageChunks,
-      collection,
-    } = await NotionRepository.shared().loadPageChunk(params.pid)
+    let { pageChunks, collection } =
+      await NotionRepository.shared().loadPageChunk(params.pid)
     const getSignedFileUrlsTasks = pageChunks
       .filter((c) => c.type === 'image' && c.imageSource)
       .map((c) => {
