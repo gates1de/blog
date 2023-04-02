@@ -33,17 +33,14 @@ const InnerLink = forwardRef<HTMLAnchorElement, Props>(
       <NextLink
         href={href}
         as={as}
+        className={className}
+        onClick={onClick}
         prefetch={prefetch === false ? false : undefined}
         passHref
+        ref={ref}
+        style={{ display: display, ...style }}
       >
-        <a
-          className={className}
-          ref={ref}
-          onClick={onClick}
-          style={{ display: display, ...style }}
-        >
-          {children}
-        </a>
+        {children}
       </NextLink>
     )
   },

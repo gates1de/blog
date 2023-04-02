@@ -1,28 +1,28 @@
 import { Dispatch, SetStateAction } from 'react'
 import styled, { css } from 'styled-components'
 
-export enum Category {
-  All = 'All',
-  Daily = 'Daily',
-  Tech = 'Tech',
-}
+export const CATEGORIES = {
+  ALL: 'All',
+  DAILY: 'Daily',
+  TECH: 'Tech',
+} as const
 
-export type CategoryType = 'All' | 'Daily' | 'Tech'
+export type Category = typeof CATEGORIES[keyof typeof CATEGORIES]
 
 export const CategoryButtons: React.FC<{
-  selectedCategory: CategoryType
-  setCategory: Dispatch<SetStateAction<CategoryType>>
+  selectedCategory: Category
+  setCategory: Dispatch<SetStateAction<Category>>
 }> = ({ selectedCategory, setCategory }) => {
   return (
     <Container>
-      {Object.entries(Category).map((value) => (
+      {Object.entries(CATEGORIES).map(([key, value]) => (
         <Button
-          key={value[0]}
-          category={value[1]}
-          className={selectedCategory === value[1] ? 'selected' : undefined}
-          onClick={() => setCategory(value[1])}
+          key={key}
+          category={value}
+          className={selectedCategory === value ? 'selected' : undefined}
+          onClick={() => setCategory(value)}
         >
-          {value[1]}
+          {value}
         </Button>
       ))}
     </Container>

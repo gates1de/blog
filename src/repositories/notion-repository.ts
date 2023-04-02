@@ -1,3 +1,5 @@
+import { Client } from '@notionhq/client'
+import { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints'
 import axios, { AxiosRequestConfig } from 'axios'
 
 import Collection from 'models/collection'
@@ -12,6 +14,8 @@ import {
 export default class NotionRepository {
   private static _instance: NotionRepository
 
+  readonly notionClient = new Client({ auth: process.env.NOTION_KEY })
+
   constructor() {}
 
   public static shared(): NotionRepository {
@@ -20,6 +24,21 @@ export default class NotionRepository {
     }
     return this._instance
   }
+
+  fetchPosts = async (databaseId: string) => {
+    const response = await this.notionClient.databases.query({
+      database_id: databaseId,
+      sorts: [
+        {
+          property: 'published_at',
+          direction: 'descending',
+        },
+      ],
+    })
+    return response.results.filter((page): page is PageObjectResponse => !!page)
+  }
+
+  // FIXME: Delete old APIs as below
 
   getSingedFileUrls = async (
     blockId: string,
