@@ -3,15 +3,15 @@ import { GetStaticPropsResult, NextPage } from 'next'
 import { BlogContent } from 'components/BlogContent'
 import Layout from 'components/Layout'
 import { PageContent } from 'components/PageContent'
-import Collection from 'models/collection'
-import PageChunk from 'models/page-chunk'
 import NotionRepository from 'repositories/notion-repository'
-import SignedFileUrl from 'models/signed-file-url'
 import { ogpImages } from 'constants/image-path'
+import { useRouter } from 'next/router'
+import PageBlock from 'models/page-block'
+import Page from 'models/page'
 
 type Props = {
-  pageChunkData?: any
-  collectionData?: any
+  pageBlockJSON?: string
+  pageJSON?: string
   description: string
   ogpImageURL: string
   path: string
@@ -23,32 +23,49 @@ type StaticProps = {
 }
 
 const Post: NextPage<Props> = ({
-  pageChunkData,
-  collectionData,
+  pageBlockJSON,
+  pageJSON,
   description,
   ogpImageURL,
   path,
-  pid,
 }) => {
-  const pageChunks = (JSON.parse(pageChunkData) as any[]).map(
-    (d) => new PageChunk(d),
-  )
-  const collection = new Collection(JSON.parse(collectionData))
-  const titleChunkContents = pageChunks.find((c) => c.type === 'page')
-    ?.contents || [{ text: 'Untitled' }]
+  const router = useRouter()
+
+  const page = pageJSON
+    ? Page.createFromDatabaseResponse(JSON.parse(pageJSON))
+    : undefined
+  const pageBlocks = pageBlockJSON
+    ? (JSON.parse(pageBlockJSON) as any[]).map((data) => new PageBlock(data))
+    : []
+
+  if (!page?.isAccessible) {
+    return (
+      <Layout
+        title={''}
+        url={path}
+        imageURL={ogpImageURL}
+        description={description}
+      >
+        <p style={{ textAlign: 'center' }}>
+          ページが存在しない or 公開されていません
+        </p>
+      </Layout>
+    )
+  }
+
   return (
     <Layout
-      title={titleChunkContents[0].text}
+      title={''}
       url={path}
       imageURL={ogpImageURL}
       description={description}
     >
       <PageContent>
-        <BlogContent
-          collection={collection}
-          pageChunks={pageChunks}
-          pageId={pid}
-        />
+        {router.isFallback ? (
+          <div>Loading...</div>
+        ) : (
+          <>{page && <BlogContent page={page} pageBlocks={pageBlocks} />}</>
+        )}
       </PageContent>
     </Layout>
   )
@@ -58,48 +75,20 @@ export const getStaticProps = async ({
   params,
 }: StaticProps): Promise<GetStaticPropsResult<Props>> => {
   try {
-    let { pageChunks, collection } =
-      await NotionRepository.shared().loadPageChunk(params.pid)
-    const getSignedFileUrlsTasks = pageChunks
-      .filter((c) => c.type === 'image' && c.imageSource)
-      .map((c) => {
-        return NotionRepository.shared().getSingedFileUrls(c.id, c.imageSource!)
-      })
-    const signedFileUrls = await Promise.all(getSignedFileUrlsTasks)
-    const flattenSignedFileUrls = ([] as SignedFileUrl[]).concat(
-      ...signedFileUrls,
-    )
-    pageChunks = pageChunks.map((c) => {
-      if (c.type !== 'image') {
-        return c
-      }
-      const signedFileUrl = flattenSignedFileUrls.find((s) => c.id === s.id)
-      if (!signedFileUrl || !c.format) {
-        return c
-      }
-      c.format.display_source = signedFileUrl.url
-      return c
-    })
     const path = process.env.SITE_URL
       ? `${process.env.SITE_URL}/posts/${params.pid}`
       : ''
-    const description =
-      pageChunks
-        .filter((c) => ['header', 'text', 'link'].includes(c.type))
-        .map((c) => {
-          return c.contents
-            .map((content) => content.text || content.link?.text || '')
-            .join('')
-        })
-        .slice(undefined, 5)
-        .join('\n')
-        .slice(0, 150) + '...'
+    const description = 'test'
+    const page = await NotionRepository.shared().fetchPage(params.pid)
+    const pageBlocks = await NotionRepository.shared().fetchPageBlocks(
+      params.pid,
+    )
     return {
       props: {
-        pageChunkData: JSON.stringify(pageChunks),
-        collectionData: JSON.stringify(collection),
         description: description,
         ogpImageURL: ogpImages[params.pid] || '',
+        pageJSON: JSON.stringify(page),
+        pageBlockJSON: JSON.stringify(pageBlocks),
         path: path,
         pid: params.pid,
       },
@@ -111,56 +100,17 @@ export const getStaticProps = async ({
 }
 
 export const getStaticPaths = async () => {
-  const tasks: Promise<Collection[]>[] = []
-  const spaceId = 'fd81ab51-dc87-429c-a482-24ce801aaf66'
-
-  const collectionIdForDaily = 'cb7f4670-623c-410e-b59e-da29fd96c691'
-  const collectionViewIdForDaily = '73f23905-79a0-4926-8780-0333d9a1993b'
-  tasks.push(
-    NotionRepository.shared().queryCollection(
-      collectionIdForDaily,
-      collectionViewIdForDaily,
-      spaceId,
-    ),
+  const posts = await NotionRepository.shared().fetchPosts(
+    '2e5aa052b3aa48b0b775039da0f2e969',
   )
 
-  const collectionIdForTech = '4e0c474c-0ceb-48a0-b4c9-94da93f48c71'
-  const collectionViewIdForTech = '04307066-2147-4cec-b5ac-ae179b8a2b05'
-  tasks.push(
-    NotionRepository.shared().queryCollection(
-      collectionIdForTech,
-      collectionViewIdForTech,
-      spaceId,
-    ),
-  )
+  const paths = posts.map((p) => {
+    return { params: { pid: p.id } }
+  })
 
-  const collectionIdForDrafts = 'a2f54dd1-bf9b-4ddf-a0aa-079d59555043'
-  const collectionViewIdForDrafts = '159ab648-8e6b-443a-bf6d-2103ff5467d6'
-  if (process.env.APP_ENV !== 'production') {
-    tasks.push(
-      NotionRepository.shared().queryCollection(
-        collectionIdForDrafts,
-        collectionViewIdForDrafts,
-        spaceId,
-      ),
-    )
-  }
-  const queryCollections: Collection[] = []
-  const result = await Promise.all(tasks)
-  const paths = queryCollections
-    .concat(...result)
-    .filter(
-      (c) =>
-        c.parentId === collectionIdForDaily ||
-        c.parentId === collectionIdForTech ||
-        c.parentId === collectionIdForDrafts,
-    )
-    .map((c) => {
-      return { params: { pid: c.id } }
-    })
   return {
     paths: paths,
-    fallback: false,
+    fallback: true,
   }
 }
 

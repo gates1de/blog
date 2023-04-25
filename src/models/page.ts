@@ -16,12 +16,23 @@ export default class Page {
     this.title = params.title || ''
     this.createdTime = params.createdTime || new Date()
     this.tags = params.tags || []
-    this.lastEditedTime = params.createdTime
+    this.lastEditedTime = params.lastEditedTime
     this.publishedAt = params.publishedAt
   }
 
   get createdTimeText() {
     return formatDate(this.createdTime, 'yyyy-MM-dd')
+  }
+
+  get isAccessible() {
+    return process.env.NODE_ENV !== 'production' || !this.tags.includes('Draft')
+  }
+
+  get lastEditedTimeText() {
+    if (!this.lastEditedTime) {
+      return ''
+    }
+    return formatDate(this.lastEditedTime, 'yyyy-MM-dd')
   }
 
   static createFromDatabaseResponse = (

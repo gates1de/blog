@@ -17,7 +17,7 @@ const IndexPage: NextPage<Props> = ({ pagesResponseJSONString }) => {
   ) as PageObjectResponse[]
   const pages = pagesResponseJSON
     .map((pageObject) => Page.createFromDatabaseResponse(pageObject))
-    .filter((p): p is Page => !!p)
+    .filter((p): p is Page => !!p && p.isAccessible)
 
   return (
     <Layout title="Home">

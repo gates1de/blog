@@ -7,128 +7,123 @@ import { Link } from 'components/Link'
 import StyledDivider from 'components/StyledDivider'
 import { CategoryTag } from 'components/TopContent'
 import { YoutubeContainer } from 'components/YoutubeContainer'
-import Collection from 'models/collection'
-import PageChunk from 'models/page-chunk'
+
+import PageBlock from 'models/page-block'
+import Page from 'models/page'
 
 import breakpoint from 'styles/breakpoint'
 
 type Props = {
-  collection: Collection
-  pageChunks: PageChunk[]
-  pageId: string
+  page: Page
+  pageBlocks: PageBlock[]
 }
 
-export const BlogContent = ({ collection, pageChunks, pageId }: Props) => {
+export const BlogContent = ({ page, pageBlocks }: Props) => {
   return (
     <Container>
-      {pageChunks.length === 0 ? (
+      {pageBlocks.length === 0 ? (
         <p>記事データがありません</p>
       ) : (
         <>
-          {pageChunks.map((chunk) => {
-            switch (chunk.type) {
-              case 'page':
-                if (pageId !== chunk.id) {
+          <TitleContainer>
+            {page.title}
+            {page.createdTimeText && (
+              <p>
+                {page.tags.map((tag, index) => (
+                  <CategoryTag key={`${tag}-${index}`} category={tag}>
+                    {tag}
+                  </CategoryTag>
+                ))}
+                作成日: {page.createdTimeText}
+                {page.lastEditedTimeText !== page.createdTimeText && (
+                  <span className="last-edited-time">
+                    {' '}
+                    (最終編集日: {page.lastEditedTimeText} )
+                  </span>
+                )}
+              </p>
+            )}
+          </TitleContainer>
+
+          {pageBlocks.map((pageBlock) => {
+            switch (pageBlock.type) {
+              case 'bulleted_list_item':
+                if (!pageBlock.richTexts || pageBlock.richTexts.length === 0) {
                   return null
                 }
+
                 return (
-                  <TitleContainer key={chunk.id}>
-                    {chunk.contents[0].text || ''}
-                    {chunk.createdTimeString && (
-                      <p>
-                        <CategoryTag category={collection.category}>
-                          {collection?.category || ''}
-                        </CategoryTag>
-                        作成日: {chunk.createdTimeString}
-                        {chunk.lastEditedTimeString !==
-                          chunk.createdTimeString && (
-                          <span className="last-edited-time">
-                            {' '}
-                            (最終編集日: {chunk.lastEditedTimeString} )
-                          </span>
-                        )}
-                      </p>
-                    )}
-                  </TitleContainer>
-                )
-              case 'header':
-                return <h1 key={chunk.id}>{chunk.contents[0].text || ''}</h1>
-              case 'image':
-                if (!chunk.imageSource || !chunk.imageWidth) {
-                  return null
-                }
-                return (
-                  <ImageContainer key={chunk.id}>
-                    <Image
-                      alt=""
-                      src={chunk.imageSource}
-                      width={chunk.imageWidth}
-                      style={{ height: '100%', objectFit: 'contain' }}
-                    />
-                  </ImageContainer>
-                )
-              case 'text':
-                if (chunk.contents.length === 0) {
-                  return null
-                }
-                return (
-                  <TextContainer key={chunk.id}>
-                    {chunk.contents.map((content, i) => {
-                      if (content.text) {
-                        if (content.isBold) {
-                          return <b key={chunk.id + i}>{content.text}</b>
-                        }
-                        if (content.isCodeBlock) {
+                  <AnnotationContainer key={pageBlock.id}>
+                    <li id={pageBlock.id}>
+                      {pageBlock.richTexts?.map((richText, index) => {
+                        if (
+                          richText.type === 'text' &&
+                          richText.text.link?.url
+                        ) {
                           return (
-                            <span key={chunk.id + i} className="codeblock">
-                              {content.text}
-                            </span>
+                            <Link
+                              key={`${pageBlock.id}-${index}`}
+                              href={richText.text.link.url}
+                            >
+                              {richText.text.content}
+                            </Link>
                           )
                         }
-                        return content.text
-                      }
-                      if (
-                        content.link &&
-                        content.link.text &&
-                        content.link.url
-                      ) {
-                        return (
-                          <Link
-                            key={chunk.id + i}
-                            href={
-                              content.link.url.startsWith('/') &&
-                              content.link.hash
-                                ? '/posts/' + pageId + '#' + content.link.hash
-                                : content.link.url
-                            }
-                          >
-                            {content.link.text}
-                          </Link>
-                        )
-                      }
-                    })}
-                  </TextContainer>
+
+                        return richText.plain_text || null
+                      })}
+
+                      {pageBlock.bulletedListItemChildren?.map((child) => (
+                        <ul key={child.id}>
+                          <li>
+                            {child.richTexts?.map((richText, index) => {
+                              if (
+                                richText.type === 'text' &&
+                                richText.text.link?.url
+                              ) {
+                                return (
+                                  <Link
+                                    key={`${pageBlock.id}-${index}`}
+                                    href={richText.text.link.url}
+                                  >
+                                    {richText.text.content}
+                                  </Link>
+                                )
+                              }
+
+                              return richText.plain_text || null
+                            })}
+                          </li>
+                        </ul>
+                      ))}
+                    </li>
+                  </AnnotationContainer>
                 )
               case 'callout':
+                if (!pageBlock.richTexts || pageBlock.richTexts.length === 0) {
+                  return null
+                }
+
                 return (
-                  <CalloutContainer key={chunk.id}>
-                    {chunk.format?.page_icon && (
-                      <span>{chunk.format?.page_icon}</span>
+                  <CalloutContainer key={pageBlock.id}>
+                    {pageBlock.callout && (
+                      <span>{pageBlock.callout.icon?.emoji || ''}</span>
                     )}
-                    {chunk.contents[0].text || ''}
+                    {pageBlock.richTexts[0].plain_text || ''}
                   </CalloutContainer>
                 )
               case 'code':
-                if (chunk.contents.length === 0) {
+                if (!pageBlock.richTexts || pageBlock.richTexts.length === 0) {
                   return null
                 }
+
                 return (
-                  <CodeContainer key={chunk.id}>
-                    {chunk.contents
-                      .filter((content) => content.text)
-                      .map((content, i) => (
+                  <CodeContainer key={pageBlock.id}>
+                    {pageBlock.richTexts
+                      .filter((richText) => !!richText.plain_text)
+                      .map((richText, i) => (
                         <SyntaxHighlighter
-                          key={chunk.id + i}
+                          key={pageBlock.id + i}
                           codeTagProps={{
                             style: {
                               fontFamily:
@@ -140,64 +135,126 @@ export const BlogContent = ({ collection, pageChunks, pageId }: Props) => {
                             backgroundColor: '#FAFAFA',
                             padding: '2rem',
                           }}
-                          language={chunk.properties.language}
+                          language={pageBlock.code?.language || ''}
                           style={githubGist}
                         >
-                          {content.text || ''}
+                          {richText.plain_text || ''}
                         </SyntaxHighlighter>
                       ))}
                   </CodeContainer>
                 )
-              case 'video':
-                if (
-                  !chunk.format?.display_source ||
-                  !chunk.format.block_aspect_ratio ||
-                  !chunk.format.block_width
-                ) {
+              case 'divider':
+                return (
+                  <StyledDivider
+                    key={pageBlock.id}
+                    style={{ margin: '6rem 0 2rem' }}
+                  />
+                )
+              case 'heading_1':
+                if (!pageBlock.richTexts || pageBlock.richTexts.length === 0) {
                   return null
                 }
+
+                return (
+                  <h1 key={pageBlock.id}>
+                    {pageBlock.richTexts[0].plain_text || ''}
+                  </h1>
+                )
+              case 'heading_2':
+                if (!pageBlock.richTexts || pageBlock.richTexts.length === 0) {
+                  return null
+                }
+
+                return (
+                  <h2 key={pageBlock.id}>
+                    {pageBlock.richTexts[0].plain_text || ''}
+                  </h2>
+                )
+              case 'heading_3':
+                if (!pageBlock.richTexts || pageBlock.richTexts.length === 0) {
+                  return null
+                }
+
+                return (
+                  <h3 key={pageBlock.id}>
+                    {pageBlock.richTexts[0].plain_text || ''}
+                  </h3>
+                )
+              case 'image':
+                if (!pageBlock.image?.file) {
+                  return null
+                }
+
+                return (
+                  <ImageContainer key={pageBlock.id}>
+                    <Image
+                      alt=""
+                      width={pageBlock.imageType === 'icon' ? 200 : 600}
+                      height={pageBlock.imageType === 'icon' ? 200 : 600}
+                      src={pageBlock.image.file.url}
+                      style={{ height: '100%', objectFit: 'contain' }}
+                    />
+                  </ImageContainer>
+                )
+              case 'paragraph':
+                if (!pageBlock.richTexts || pageBlock.richTexts.length === 0) {
+                  return null
+                }
+
+                return (
+                  <TextContainer key={pageBlock.id}>
+                    {pageBlock.richTexts.map((richText, i) => {
+                      if (richText) {
+                        if (richText.annotations.bold) {
+                          return (
+                            <b key={pageBlock.id + i}>{richText.plain_text}</b>
+                          )
+                        }
+
+                        if (richText.annotations.code) {
+                          return (
+                            <span
+                              key={`${pageBlock.id}-${i}`}
+                              className="codeblock"
+                            >
+                              {richText.plain_text}
+                            </span>
+                          )
+                        }
+
+                        if (
+                          richText.type === 'text' &&
+                          richText.text.link?.url
+                        ) {
+                          return (
+                            <Link
+                              key={`${pageBlock.id}-${i}`}
+                              href={richText.text.link.url}
+                            >
+                              {richText.text.content}
+                            </Link>
+                          )
+                        }
+                      }
+                      return richText.plain_text
+                    })}
+                  </TextContainer>
+                )
+              case 'video':
+                if (!pageBlock.video?.external?.url) {
+                  return null
+                }
+
                 return (
                   <YoutubeContainer
-                    key={chunk.id}
-                    aspectRatio={chunk.format.block_aspect_ratio}
-                    videoURL={chunk.format.display_source}
-                    width={chunk.format.block_width}
+                    key={pageBlock.id}
+                    videoURL={pageBlock.video.external.embedUrl}
                   />
                 )
               default:
                 return null
             }
           })}
-          {pageChunks
-            .filter((c) => c.type === 'bulleted_list')
-            .map((chunk, i) => (
-              <div key={chunk.id}>
-                {i == 0 && <StyledDivider style={{ margin: '6rem 0 2rem' }} />}
-                <AnnotationContainer id={chunk.id.replace(/-/g, '')}>
-                  <span>• </span>
-                  {chunk.contents.map((content) => {
-                    if (content.text) {
-                      return content.text
-                    }
-                    if (content.link && content.link.text && content.link.url) {
-                      return (
-                        <Link
-                          key={chunk.id}
-                          href={
-                            content.link.url.startsWith('/') &&
-                            content.link.hash
-                              ? '/posts/' + pageId + '#' + content.link.hash
-                              : content.link.url
-                          }
-                        >
-                          {content.link.text}
-                        </Link>
-                      )
-                    }
-                  })}
-                </AnnotationContainer>
-              </div>
-            ))}
         </>
       )}
     </Container>
@@ -291,9 +348,8 @@ const CodeContainer = styled.div`
   line-height: 2.4rem;
 `
 
-const AnnotationContainer = styled.div`
-  font-size: 1.2rem;
-  line-height: 2rem;
+const AnnotationContainer = styled.ul`
+  margin: 0.5rem 0;
 `
 
 const ImageContainer = styled.div`

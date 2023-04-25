@@ -1,8 +1,12 @@
 import { Client } from '@notionhq/client'
-import { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints'
+import {
+  BlockObjectResponse,
+  PageObjectResponse,
+} from '@notionhq/client/build/src/api-endpoints'
 import axios, { AxiosRequestConfig } from 'axios'
 
 import Collection from 'models/collection'
+import PageBlock from 'models/page-block'
 import PageChunk from 'models/page-chunk'
 import SignedFileUrl from 'models/signed-file-url'
 import {
@@ -36,6 +40,36 @@ export default class NotionRepository {
       ],
     })
     return response.results.filter((page): page is PageObjectResponse => !!page)
+  }
+
+  fetchPage = async (pageId: string) => {
+    return await this.notionClient.pages.retrieve({ page_id: pageId })
+  }
+
+  fetchPageBlocks = async (pageId: string) => {
+    const response = await this.notionClient.blocks.children.list({
+      block_id: pageId,
+      page_size: 100,
+    })
+
+    const tasks = response.results.map(
+      async (result): Promise<PageBlock | undefined> => {
+        // TODO: Fetch children recursively & Support other types
+        if (
+          'type' in result &&
+          result.type === 'bulleted_list_item' &&
+          result.has_children
+        ) {
+          const children = await this.fetchPageBlocks(result.id)
+          return PageBlock.parseJSON(result, children)
+        }
+
+        return PageBlock.parseJSON(result)
+      },
+    )
+
+    const results = await Promise.all(tasks)
+    return results.filter((pb): pb is PageBlock => !!pb)
   }
 
   // FIXME: Delete old APIs as below
