@@ -7,3 +7,7 @@ build
 .vercel
 
 **/.DS_Store
+
+.yarnrc.yml
+.yarn/*
+yarn-error.log

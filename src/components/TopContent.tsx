@@ -5,50 +5,45 @@ import { Link } from 'components/Link'
 import {
   CategoryButtons,
   Category,
-  CategoryType,
+  CATEGORIES,
 } from 'components/CategoryButtons'
-import Collection from 'models/collection'
+import Page from 'models/page'
 
 type Props = {
-  collections: Collection[]
+  pages: Page[]
 }
 
-export const TopContent = ({ collections }: Props) => {
-  const [category, setCategory] = useState<CategoryType>(Category.All)
-  const filteredCollections = useMemo(() => {
-    if (category === Category.All) {
-      return collections
+export const TopContent = ({ pages }: Props) => {
+  const [category, setCategory] = useState<Category>(CATEGORIES.ALL)
+  const filteredPages = useMemo(() => {
+    if (category === CATEGORIES.ALL) {
+      return pages
     }
-    return collections.filter((c) => c.category === category)
-  }, [collections, category])
+    return pages.filter((p) => p.tags.some((t) => t === category))
+  }, [pages, category])
 
   return (
     <Container>
       <CategoryButtons selectedCategory={category} setCategory={setCategory} />
-      {collections.length === 0 ? (
+      {pages.length === 0 ? (
         <p>記事データがありません</p>
       ) : (
         <>
-          {filteredCollections.map((collection) => {
-            switch (collection.type) {
-              case 'page':
-                return (
-                  <Link key={collection.id} href={'/posts/' + collection.id}>
-                    <TitleContainer>
-                      <p>
-                        <CategoryTag category={collection.category}>
-                          {collection?.category || ''}
-                        </CategoryTag>
-                        {collection?.createdTimeString || ''}
-                      </p>
-                      {collection.title}
-                    </TitleContainer>
-                  </Link>
-                )
-              default:
-                return null
-            }
-          })}
+          {filteredPages.map((page) => (
+            <Link key={page.id} href={'/posts/' + page.id}>
+              <TitleContainer>
+                <p>
+                  {page.tags.map((tag, index) => (
+                    <CategoryTag key={`${tag}-${index}`} category={tag}>
+                      {tag}
+                    </CategoryTag>
+                  ))}
+                  {page.createdTimeText || ''}
+                </p>
+                {page.title}
+              </TitleContainer>
+            </Link>
+          ))}
         </>
       )}
     </Container>

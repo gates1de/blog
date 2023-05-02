@@ -23,7 +23,7 @@ const Layout: React.FC<Props> = ({
   title = 'Untitled',
   url,
 }) => (
-  <div>
+  <Container>
     <GlobalStyle />
     <Header
       description={description}
@@ -34,11 +34,15 @@ const Layout: React.FC<Props> = ({
     />
     <ChildrenContainer>{children}</ChildrenContainer>
     <Footer />
-  </div>
+  </Container>
 )
 
 export default Layout
 
-const ChildrenContainer = styled.div`
-  overflow-x: hidden;
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 `
+
+const ChildrenContainer = styled.div``

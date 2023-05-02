@@ -7,6 +7,9 @@ module.exports = {
   images: {
     domains: ['s3.us-west-2.amazonaws.com'],
   },
+  experimental: {
+    scrollRestoration: true,
+  },
   webpack: config => {
     // path setting
     config.resolve.modules = [...config.resolve.modules, './src']

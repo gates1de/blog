@@ -1,19 +1,23 @@
 import styled from 'styled-components'
 
 type Props = {
-  aspectRatio: number
+  aspectRatio?: number
   videoURL: string
-  width: number
+  width?: number
 }
 
-export const YoutubeContainer = ({ aspectRatio, videoURL, width }: Props) => {
-  const adjustmentWidth = Math.min(width, 600)
+export const YoutubeContainer = ({
+  aspectRatio = 9 / 16,
+  videoURL,
+  width,
+}: Props) => {
+  const adjustmentWidth = width ? Math.min(width, 600) : 600
   return (
     <Container>
       <iframe
         id="ytplayer"
         src={videoURL}
-        height={aspectRatio * adjustmentWidth}
+        height={aspectRatio ? aspectRatio * adjustmentWidth : 'auto'}
         width={adjustmentWidth}
       />
     </Container>
