@@ -28,7 +28,7 @@ const IndexPage: NextPage<Props> = ({ pagesResponseJSONString }) => {
   )
 }
 
-export const getServerSideProps = async (): Promise<
+export const getStaticProps = async (): Promise<
   GetStaticPropsResult<Props>
 > => {
   try {
@@ -40,6 +40,7 @@ export const getServerSideProps = async (): Promise<
       props: {
         pagesResponseJSONString: JSON.stringify(posts),
       },
+      revalidate: 1,
     }
   } catch (error) {
     throw error
