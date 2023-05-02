@@ -50,5 +50,6 @@
     "prettier": "^2.8.7",
     "typescript": "^5.0.2"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "packageManager": "yarn@3.5.1"
 }
