@@ -7,6 +7,7 @@ const GlobalStyle = createGlobalStyle`
     -webkit-font-smoothing: auto;
     background-color: white;
     font-size:62.5%;
+    height: 100%;
   }
 
   body {
@@ -22,6 +23,7 @@ const GlobalStyle = createGlobalStyle`
       "Segoe UI Symbol";
     font-weight: 400;
     font-size: 1.6rem;
+    height: 100%;
     line-height: 2.4rem;
     white-space: pre-wrap;
   }
@@ -30,11 +32,15 @@ const GlobalStyle = createGlobalStyle`
     box-sizing: border-box;
   }
 
+  div#__next {
+    height: 100%;
+  }
+
   a {
     color: #1a73e8;
     cursor: pointer;
     text-decoration: none;
-    transition: 0.2s ease-in;
+    transition: opacity 0.2s ease-in;
 
     :hover {
       opacity: 0.5;

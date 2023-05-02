@@ -13,6 +13,7 @@ export default Footer
 
 const StyledFooter = styled.footer`
   display: flex;
+  margin-top: auto;
   min-height: 6rem;
   padding: 3rem 2rem 1rem;
 
